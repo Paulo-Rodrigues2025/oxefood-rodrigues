@@ -3,7 +3,9 @@ package br.com.ifpe.oxefood.modelo.produto;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import jakarta.transaction.Transactional;
 
@@ -13,14 +15,17 @@ public class ProdutoService {
     @Autowired
    private ProdutoRepository repository;
 
-   @Transactional
-   public Produto save(Produto produto) {
-    if (produto.getValorUnitario() < 10) {
-	    throw new ProdutoException(ProdutoException.MSG_VALOR_MINIMO_PRODUTO);
-	}
-       produto.setHabilitado(Boolean.TRUE);
-       return repository.save(produto);
-   }
+ @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+public class ProdutoException extends RuntimeException {
+
+    public static final String MSG_VALOR_MINIMO_PRODUTO = "Não é permitido inserir produtos com valores inferiores a R$ 10.";
+
+    public ProdutoException(String msg) {
+
+	super(String.format(msg));
+    }
+}
+
    public List<Produto> listarTodos() {
   
     return repository.findAll();
@@ -53,6 +58,11 @@ public Produto obterPorID(Long id) {
        produto.setHabilitado(Boolean.FALSE);
 
        repository.save(produto);
+   }
+
+   public Produto save(Produto produtoNovo) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'save'");
    }
 
     
